@@ -26,11 +26,16 @@ void encrypt_file(const char *input_filename, const char *output_filename, const
 
     if (!input_file || !output_file) {
         display_error_message("Failed to open files");
+        if (input_file) fclose(input_file);
+        if (output_file) fclose(output_file);
         return;
     }
 
     if (crypto_pwhash(key, sizeof(key), password, strlen(password), salt, crypto_pwhash_OPSLIMIT_SENSITIVE, crypto_pwhash_MEMLIMIT_SENSITIVE, crypto_pwhash_ALG_DEFAULT) != 0) {
         display_error_message("Key derivation failed");
+        // Close the files before returning
+        fclose(input_file);
+        fclose(output_file);
         return;
     }
 
